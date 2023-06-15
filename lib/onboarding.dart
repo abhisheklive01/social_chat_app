@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:social_chat_app/sign_up.dart';
 
 class OnBoarding extends StatefulWidget {
   const OnBoarding({super.key});
@@ -62,16 +63,23 @@ class _OnBoardingState extends State<OnBoarding> {
                   width: 100,
                   child: ElevatedButton(
                       onPressed: () {
-                        _pageController.nextPage(
-                            duration: Duration(microseconds: 500),
-                            curve: Curves.ease);
+                        if (_currentPage == 2) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SignUp()),
+                          );
+                        } else {
+                          _pageController.nextPage(
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.ease);
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8)),
                           backgroundColor:
                               const Color.fromARGB(255, 246, 87, 8)),
-                      child: const Text("Next"))),
+                      child: Text(_currentPage == 2 ? "Get Started" : "Next"))),
             ),
             const SizedBox(
               height: 15,

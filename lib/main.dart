@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:social_chat_app/sign_up.dart';
 
 import 'onboarding.dart';
 
