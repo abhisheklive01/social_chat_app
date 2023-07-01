@@ -18,8 +18,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         theme: ThemeData.dark().copyWith(
+          
             navigationBarTheme: NavigationBarThemeData(
           backgroundColor: Colors.black,
+          
           indicatorColor: Color(0xCAF15800),
           labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
           labelTextStyle: MaterialStateProperty.resolveWith(

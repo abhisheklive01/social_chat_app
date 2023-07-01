@@ -88,6 +88,7 @@ class HomeView extends StatelessWidget {
                 expandedHeight: 40,
                 floating: true,
                 pinned: false,
+                
                 snap: true,
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -104,6 +105,7 @@ class HomeView extends StatelessWidget {
                   ],
                 ),
               ),
+            
               SliverToBoxAdapter(
                 child: SizedBox(
                   height: 120,
@@ -312,7 +314,8 @@ class ProfileStoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return 
+    Stack(
       alignment: Alignment.center,
       children: [
         Padding(
@@ -350,5 +353,6 @@ class ProfileStoryCard extends StatelessWidget {
         )
       ],
     );
+  
   }
 }

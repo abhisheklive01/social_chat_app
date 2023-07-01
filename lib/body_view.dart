@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'home_view.dart';
 import 'nav_bar.dart';
+import 'profile/profile_view.dart';
 
 class BodyView extends StatefulWidget {
   const BodyView({super.key});
@@ -29,11 +29,7 @@ class _BodyViewState extends State<BodyView> {
       alignment: Alignment.center,
       child: Text('Page 4'),
     ),
-    Container(
-      color: Colors.green,
-      alignment: Alignment.center,
-      child: Text('Page 6'),
-    )
+    ProfileView()
   ];
   @override
   Widget build(BuildContext context) {
