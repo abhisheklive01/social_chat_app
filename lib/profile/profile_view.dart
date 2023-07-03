@@ -53,7 +53,7 @@ class ProfileView extends StatelessWidget {
                     child: TabBarView(children: [
                       ProfilePostCards(),
                       ProfileReelsCards(),
-                     ProfileSaveCards(),
+                      ProfileSaveCards(),
                     ]),
                   )
                 ],

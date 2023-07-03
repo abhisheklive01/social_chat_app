@@ -341,6 +341,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  video_compress:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: caf41183e84adebd6ef5c8fba547937daf556a65
+      resolved-ref: caf41183e84adebd6ef5c8fba547937daf556a65
+      url: "https://github.com/SpectoraSoftware/VideoCompress"
+    source: git
+    version: "1.0.0"
 sdks:
   dart: ">=3.0.0 <4.0.0"
   flutter: ">=3.3.0"

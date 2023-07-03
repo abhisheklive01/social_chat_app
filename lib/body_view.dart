@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:social_chat_app/post_upload.dart';
+import 'package:social_chat_app/search/search_view.dart';
+import 'package:social_chat_app/upload_post/post_view.dart';
 import 'home_view.dart';
 import 'nav_bar.dart';
 import 'profile/profile_view.dart';
@@ -14,21 +17,9 @@ class _BodyViewState extends State<BodyView> {
   int currentIndex = 0;
   var pageViewList = [
     HomeView(),
-    Container(
-      color: Colors.yellow,
-      alignment: Alignment.center,
-      child: Text('Page 2'),
-    ),
-    Container(
-      color: Colors.blue,
-      alignment: Alignment.center,
-      child: Text('Page 3'),
-    ),
-    Container(
-      color: Colors.amber,
-      alignment: Alignment.center,
-      child: Text('Page 4'),
-    ),
+    SearchView(),
+    PostView(),
+    PostUploadPage(),
     ProfileView()
   ];
   @override
