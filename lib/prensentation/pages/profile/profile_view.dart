@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:social_chat_app/profile/widgets/profile_post_card.dart';
-import 'package:social_chat_app/profile/widgets/profile_reels_cards.dart';
-import 'package:social_chat_app/profile/widgets/profile_save_cards%20.dart';
+import 'package:social_chat_app/prensentation/pages/profile/widgets/profile_post_card.dart';
+import 'package:social_chat_app/prensentation/pages/profile/widgets/profile_reels_cards.dart';
+import 'package:social_chat_app/prensentation/pages/profile/widgets/profile_save_cards%20.dart';
 
+import '../auth/login.dart';
 import 'widgets/profile_header_card.dart';
 
 // ignore_for_file: prefer_const_constructors
@@ -29,7 +31,23 @@ class ProfileView extends StatelessWidget {
                       textColor: Colors.white,
                       label: Text("5"),
                       child: Icon(Icons.notifications))),
-              IconButton(onPressed: () {}, icon: Icon(Icons.more_vert))
+              PopupMenuButton(
+                  child: Icon(Icons.more_vert),
+                  itemBuilder: (context) {
+                    return [
+                      PopupMenuItem(
+                          child: ListTile(
+                        leading: Icon(Icons.logout),
+                        title: Text("Logout"),
+                        onTap: () async {
+                          await FirebaseAuth.instance.signOut();
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: ((context) => LoginView())));
+                        },
+                      ))
+                    ];
+                  })
             ],
           ),
           body: NestedScrollView(

@@ -1,55 +1,45 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/utility/validator.dart';
+import '../../../services/auth_service.dart';
 import 'login.dart';
 // ignore_for_file: prefer_const_constructors
 
-class SignUp extends StatelessWidget {
+class SignUp extends StatefulWidget {
   SignUp({super.key});
 
+  @override
+  State<SignUp> createState() => _SignUpState();
+}
+
+class _SignUpState extends State<SignUp> {
+  var appValidator = AppValidator();
+  var authService = AuthService();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  final _userNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  var isLoader = false;
+
   Future<void> _submitForm() async {
+    setState(() {
+      isLoader = true;
+    });
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(_formKey.currentContext!).showSnackBar(
-        const SnackBar(content: Text('Form submitted successfully')),
-      );
+      var data = {
+        "userName": _userNameController.text,
+        "email": _emailController.text,
+        "phone": _phoneController.text,
+        "password": _passwordController.text,
+      };
+      await authService.createUser(data, context);
+      setState(() {
+        isLoader = false;
+      });
     }
-  }
-
-  String? _validateEmail(value) {
-    if (value!.isEmpty) {
-      return 'Please enter an email';
-    }
-    RegExp emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegExp.hasMatch(value)) {
-      return 'Please enter a valid email';
-    }
-    return null;
-  }
-
-  String? _validatePhoneNumber(value) {
-    if (value!.isEmpty) {
-      return 'Please enter a phone number';
-    }
-    if (value.length != 10) {
-      return 'Please enter a 10-digit phone number';
-    }
-    return null;
-  }
-
-  String? _validatePassword(value) {
-    if (value!.isEmpty) {
-      return 'Please enter a password';
-    }
-
-    return null;
-  }
-
-  String? _validateUsername(value) {
-    if (value!.isEmpty) {
-      return 'Please enter a username';
-    }
-    return null;
   }
 
   @override
@@ -81,28 +71,31 @@ class SignUp extends StatelessWidget {
                       height: 50.0,
                     ),
                     TextFormField(
+                        controller: _userNameController,
                         style: TextStyle(
                           color: Colors.white,
                         ),
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration:
                             _buildInputDecoration("Username", Icons.person),
-                        validator: _validateUsername),
+                        validator: appValidator.validateUsername),
                     SizedBox(
                       height: 16.0,
                     ),
                     TextFormField(
+                        controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         style: TextStyle(
                           color: Colors.white,
                         ),
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: _buildInputDecoration("Email", Icons.email),
-                        validator: _validateEmail),
+                        validator: appValidator.validateEmail),
                     SizedBox(
                       height: 16.0,
                     ),
                     TextFormField(
+                      controller: _phoneController,
                       style: TextStyle(
                         color: Colors.white,
                       ),
@@ -110,19 +103,20 @@ class SignUp extends StatelessWidget {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration:
                           _buildInputDecoration("Phone number", Icons.call),
-                      validator: _validatePhoneNumber,
+                      validator: appValidator.validatePhoneNumber,
                     ),
                     SizedBox(
                       height: 16.0,
                     ),
                     TextFormField(
+                      controller: _passwordController,
                       style: TextStyle(
                         color: Colors.white,
                       ),
                       keyboardType: TextInputType.phone,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: _buildInputDecoration("Password", Icons.lock),
-                      validator: _validatePassword,
+                      validator: appValidator.validatePassword,
                     ),
                     SizedBox(
                       height: 40.0,
@@ -134,8 +128,10 @@ class SignUp extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xFFF15900)),
                             onPressed: _submitForm,
-                            child: Text("Create",
-                                style: TextStyle(fontSize: 20)))),
+                            child: isLoader
+                                ? Center(child: CircularProgressIndicator())
+                                : Text("Create",
+                                    style: TextStyle(fontSize: 20)))),
                     SizedBox(
                       height: 30.0,
                     ),

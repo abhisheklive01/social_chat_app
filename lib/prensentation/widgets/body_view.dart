@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:social_chat_app/post_upload.dart';
-import 'package:social_chat_app/search/search_view.dart';
-import 'package:social_chat_app/upload_post/post_view.dart';
-import 'home_view.dart';
+import 'package:social_chat_app/prensentation/pages/search/search_view.dart';
+import 'package:social_chat_app/prensentation/pages/upload_post/post_view.dart';
 import 'nav_bar.dart';
-import 'profile/profile_view.dart';
+import '../pages/home/home_view.dart';
+import '../pages/profile/profile_view.dart';
 
 class BodyView extends StatefulWidget {
   const BodyView({super.key});
@@ -19,7 +18,7 @@ class _BodyViewState extends State<BodyView> {
     HomeView(),
     SearchView(),
     PostView(),
-    PostUploadPage(),
+    Text("Hello"),
     ProfileView()
   ];
   @override

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:social_chat_app/sign_up.dart';
+import 'package:social_chat_app/prensentation/pages/auth/sign_up.dart';
 
 class OnBoarding extends StatefulWidget {
   const OnBoarding({super.key});

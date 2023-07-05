@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "624903561185",
+    "project_id": "instafeed-60a74",
+    "storage_bucket": "instafeed-60a74.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:624903561185:android:7c204801b480651af8fca0",
+        "android_client_info": {
+          "package_name": "com.example.social_chat_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "624903561185-ee2krbnjij0muuvq4qsr91rie73qdbb7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWw5cyiPDm7ZVGnCH9wjT-4o0oygeYTrc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "624903561185-ee2krbnjij0muuvq4qsr91rie73qdbb7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
