@@ -29,7 +29,7 @@ class _SignUpState extends State<SignUp> {
       isLoader = true;
     });
     if (_formKey.currentState!.validate()) {
-      var data = {
+      Map<String, dynamic> data = {
         "userName": _userNameController.text,
         "email": _emailController.text,
         "phone": _phoneController.text,
