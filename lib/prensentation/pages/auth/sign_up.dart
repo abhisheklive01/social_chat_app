@@ -35,6 +35,8 @@ class _SignUpState extends State<SignUp> {
         "phone": _phoneController.text,
         "password": _passwordController.text,
       };
+
+      
       await authService.createUser(data, context);
       setState(() {
         isLoader = false;

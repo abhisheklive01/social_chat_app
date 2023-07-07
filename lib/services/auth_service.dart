@@ -14,6 +14,7 @@ class AuthService {
         email: data['email'],
         password: data['password'],
       );
+
       data['id'] = credential.user!.uid;
       data['createAt'] = createAt;
       await firestoreService.addUser(data);
@@ -32,7 +33,6 @@ class AuthService {
   }
 
   Future<void> loginUser(data, context) async {
- 
     try {
       final credential = await auth.signInWithEmailAndPassword(
         email: data['email'],
