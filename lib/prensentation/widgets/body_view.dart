@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:social_chat_app/prensentation/pages/search/search_view.dart';
 import 'package:social_chat_app/prensentation/pages/upload_post/post_view.dart';
@@ -19,7 +20,9 @@ class _BodyViewState extends State<BodyView> {
     SearchView(),
     PostView(),
     Text("Hello"),
-    ProfileView()
+    ProfileView(
+      userId: FirebaseAuth.instance.currentUser!.uid,
+    )
   ];
   @override
   Widget build(BuildContext context) {

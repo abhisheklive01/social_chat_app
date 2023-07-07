@@ -10,8 +10,8 @@ import 'widgets/profile_header_card.dart';
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 class ProfileView extends StatelessWidget {
-  const ProfileView({super.key});
-
+  const ProfileView({super.key, required this.userId});
+  final String userId;
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -52,7 +52,11 @@ class ProfileView extends StatelessWidget {
           ),
           body: NestedScrollView(
               headerSliverBuilder: (context, value) {
-                return [ProfileHeaderCard()];
+                return [
+                  ProfileHeaderCard(
+                    userId: userId,
+                  )
+                ];
               },
               body: Column(
                 children: [

@@ -32,6 +32,7 @@ class AuthService {
   }
 
   Future<void> loginUser(data, context) async {
+ 
     try {
       final credential = await auth.signInWithEmailAndPassword(
         email: data['email'],
