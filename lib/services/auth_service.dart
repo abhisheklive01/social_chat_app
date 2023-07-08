@@ -7,7 +7,7 @@ import 'firestore_service.dart';
 class AuthService {
   FirebaseAuth auth = FirebaseAuth.instance;
   final firestoreService = FirestoreService();
-  Future<void> createUser(data, context) async {
+  Future<void> createUser(Map<String, dynamic> data, context) async {
     var createAt = DateTime.now().millisecond;
     try {
       final credential = await auth.createUserWithEmailAndPassword(
@@ -15,9 +15,18 @@ class AuthService {
         password: data['password'],
       );
 
-      data['id'] = credential.user!.uid;
-      data['createAt'] = createAt;
-      await firestoreService.addUser(data);
+      // create object
+      var userData = {
+        "id": credential.user!.uid,
+        "createAt": createAt,
+        "bio": "Bio",
+        "des": "Useing Instafeed",
+        "profileUrl": ""
+      };
+      // merged Data
+
+      var userDetails = {...data, ...userData};
+      await firestoreService.addUser(userDetails);
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: ((context) => BodyView())));
     } catch (e) {

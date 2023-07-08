@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class HomeView extends StatelessWidget {
   HomeView({super.key});
   var storyData = [
+    
     {
       'imageUrl':
           'https://img.freepik.com/free-vector/realistic-samurai-illustrated-background_52683-69460.jpg?w=740&t=st=1686137185~exp=1686137785~hmac=390704896744102739b13593a6ee86ac579820b437588272dda37641c152fe9b',

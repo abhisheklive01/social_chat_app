@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../auth/edit_profile.dart';
+
 class ProfileHeaderCard extends StatelessWidget {
   ProfileHeaderCard({
     super.key,
@@ -89,6 +91,7 @@ class ProfileCard extends StatelessWidget {
                     )
                   ],
                 ),
+              
                 SizedBox(
                   width: 20,
                 ),
@@ -111,23 +114,38 @@ class ProfileCard extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            Text(
-              userData["userName"],
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  userData["userName"],
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+                ),
+                IconButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: ((context) => EditProfile(
+                                profileData: userData,
+                              ))));
+                    },
+                    icon: Icon(Icons.edit))
+              ],
             ),
-            Text("Grapic Designer | Photographer"),
+            Text(userData["bio"]),
             SizedBox(
               height: 5,
             ),
             Text(
-              "Capturing moments, one frame at a time. 📸 Passionate photographer seeking beauty in every click.",
+              userData["des"],
               style: TextStyle(color: Colors.grey.shade400),
             ),
             SizedBox(
               height: 30,
               child: TextButton(
                   onPressed: () {},
-                  child: Text("https://fonts.google.com/icon")),
+                  child: Text(
+                    userData["profileUrl"],
+                  )),
             )
           ],
         ));
