@@ -28,6 +28,11 @@ class MediaPicker {
     }
   }
 
+  imgPicker() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    return pickedFile!.path;
+  }
+
   Future<Map<String, dynamic>> takePicture() async {
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
 

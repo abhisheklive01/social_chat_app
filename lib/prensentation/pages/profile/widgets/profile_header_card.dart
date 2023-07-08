@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../auth/edit_profile.dart';
+
 class ProfileHeaderCard extends StatelessWidget {
   ProfileHeaderCard({
     super.key,
@@ -74,8 +76,7 @@ class ProfileCard extends StatelessWidget {
                         padding: const EdgeInsets.all(2.0),
                         child: CircleAvatar(
                           radius: 45,
-                          backgroundImage: NetworkImage(
-                              "https://img.freepik.com/free-vector/hand-drawn-korean-drawing-style-character-illustration_23-2149623257.jpg?size=338&ext=jpg&ga=GA1.2.647470437.1685963067&semt=robertav1_2_sidr"),
+                          backgroundImage: NetworkImage(userData["profileUrl"]),
                         ),
                       ),
                     ),
@@ -111,23 +112,34 @@ class ProfileCard extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            Text(
-              userData["userName"],
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  userData["userName"],
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+                ),
+                IconButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: ((context) => EditProfile(
+                                userDetails: userData,
+                              ))));
+                    },
+                    icon: Icon(Icons.edit))
+              ],
             ),
-            Text("Grapic Designer | Photographer"),
+            Text(userData["bio"]),
             SizedBox(
               height: 5,
             ),
             Text(
-              "Capturing moments, one frame at a time. 📸 Passionate photographer seeking beauty in every click.",
+              userData["des"],
               style: TextStyle(color: Colors.grey.shade400),
             ),
             SizedBox(
               height: 30,
-              child: TextButton(
-                  onPressed: () {},
-                  child: Text("https://fonts.google.com/icon")),
+              child: TextButton(onPressed: () {}, child: Text(userData["url"])),
             )
           ],
         ));
