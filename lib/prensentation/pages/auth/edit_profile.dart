@@ -91,8 +91,6 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
-
-
   Future<void> _submitForm() async {
     setState(() {
       isLoader = true;
@@ -202,10 +200,11 @@ class _EditProfileState extends State<EditProfile> {
                     ),
                     TextFormField(
                       controller: _bioController,
+                      maxLines: null,
                       style: TextStyle(
                         color: Colors.white,
                       ),
-                      keyboardType: TextInputType.phone,
+                      keyboardType: TextInputType.multiline,
                       decoration:
                           _buildInputDecoration("Bio", Icons.copy_all_sharp),
                     ),

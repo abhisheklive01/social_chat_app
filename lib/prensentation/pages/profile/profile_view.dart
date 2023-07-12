@@ -21,7 +21,6 @@ class ProfileView extends StatelessWidget {
           backgroundColor: Colors.black,
           appBar: AppBar(
             elevation: 0,
-            leading: IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back)),
             backgroundColor: Color(0xFF1B1B1B),
             title: Text("Profile"),
             actions: [

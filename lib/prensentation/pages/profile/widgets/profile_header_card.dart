@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../auth/edit_profile.dart';
@@ -119,14 +120,16 @@ class ProfileCard extends StatelessWidget {
                   userData["userName"],
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
                 ),
-                IconButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: ((context) => EditProfile(
-                                userDetails: userData,
-                              ))));
-                    },
-                    icon: Icon(Icons.edit))
+                FirebaseAuth.instance.currentUser!.uid == userData["id"]
+                    ? IconButton(
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: ((context) => EditProfile(
+                                    userDetails: userData,
+                                  ))));
+                        },
+                        icon: Icon(Icons.edit))
+                    : SizedBox()
               ],
             ),
             Text(userData["bio"]),
