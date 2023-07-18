@@ -29,6 +29,6 @@ class FirestoreService {
             );
           });
       throw error;
-    }
+    } 
   }
 }
