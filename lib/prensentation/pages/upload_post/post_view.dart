@@ -1,10 +1,14 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:social_chat_app/prensentation/pages/upload_post/widgets/media_picker.dart';
 import 'package:social_chat_app/prensentation/pages/upload_post/widgets/post_bottom_sheet.dart';
+import 'package:social_chat_app/services/firestore_service.dart';
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
+import 'package:uuid/uuid.dart';
 
 class PostView extends StatefulWidget {
   const PostView({super.key});
@@ -15,8 +19,20 @@ class PostView extends StatefulWidget {
 
 class _PostViewState extends State<PostView> {
   var mediaPicker = MediaPicker();
-
+  var uuid = Uuid();
   final List<Map<String, dynamic>> _mediaFiles = [];
+  final firestoreService = FirestoreService();
+  final _desController = TextEditingController();
+  final imageUrlList = [];
+
+  uploadFile() async {
+    for (var i in _mediaFiles) {
+      var imgeUrl = await firestoreService.uploadFile(File(i['thumbnailFile']));
+      setState(() {
+        imageUrlList.add(imgeUrl);
+      });
+    }
+  }
 
   void pickImgaes() async {
     Navigator.pop(context);
@@ -26,6 +42,25 @@ class _PostViewState extends State<PostView> {
         _mediaFiles.addAll(pickFiles);
       });
     }
+  }
+
+  uploadPost() async {
+    await uploadFile();
+    var id = uuid.v4();
+    var createAtTime = DateTime.now().microsecondsSinceEpoch;
+    var postData = {
+      "id": id,
+      "userId": FirebaseAuth.instance.currentUser!.uid,
+      "createdAt": createAtTime,
+      "likesImage": [],
+      "likesCount": 0,
+      "commentsCount": 0,
+      "description": _desController.text,
+      "postImages": imageUrlList,
+    };
+    try {
+      await firestoreService.addPost(postData);
+    } catch (error) {}
   }
 
   Future<void> takePicture() async {
@@ -63,7 +98,9 @@ class _PostViewState extends State<PostView> {
       floatingActionButton: ElevatedButton(
           style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 255, 66, 53)),
-          onPressed: () {},
+          onPressed: () {
+            uploadPost();
+          },
           child: Text("Post")),
       appBar: AppBar(title: Text("Upload Post")),
       body: ListView(
@@ -78,6 +115,7 @@ class _PostViewState extends State<PostView> {
                   height: 10,
                 ),
                 TextField(
+                  controller: _desController,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
