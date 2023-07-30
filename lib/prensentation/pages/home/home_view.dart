@@ -1,9 +1,35 @@
 import 'package:flutter/material.dart';
+
+import '../../../services/firestore_service.dart';
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   HomeView({super.key});
+
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  @override
+  void initState() {
+    getPost();
+    super.initState();
+  }
+
+  List<Map<String, dynamic>> postData = [];
+
+  var firestoreService = FirestoreService();
+
+  getPost() async {
+    var posts = await firestoreService.getPost();
+    setState(() {
+      postData = posts;
+    });
+    print(posts);
+  }
+
   var storyData = [
     {
       'imageUrl':
@@ -32,43 +58,43 @@ class HomeView extends StatelessWidget {
     },
   ];
 
-  var postData = [
-    {
-      'imageUrl':
-          'https://img.freepik.com/free-vector/realistic-samurai-illustrated-background_52683-69460.jpg?w=740&t=st=1686137185~exp=1686137785~hmac=390704896744102739b13593a6ee86ac579820b437588272dda37641c152fe9b',
-      'userName': 'Vikram Singh Rathore',
-      "profileImage":
-          "https://img.freepik.com/free-vector/little-blond-boy-anime_18591-77251.jpg?size=626&ext=jpg&ga=GA1.2.647470437.1685963067&semt=robertav1_2_sidr"
-    },
-    {
-      'imageUrl':
-          'https://img.freepik.com/free-vector/little-blond-boy-anime_18591-77251.jpg?size=626&ext=jpg&ga=GA1.2.647470437.1685963067&semt=robertav1_2_sidr',
-      'userName': 'Vivek Kumar',
-      "profileImage":
-          "https://img.freepik.com/premium-vector/character-design-girl-bring-stick_286658-173.jpg?size=626&ext=jpg&ga=GA1.1.647470437.1685963067&semt=robertav1_2_sidr"
-    },
-    {
-      'imageUrl':
-          'https://img.freepik.com/premium-vector/heart-girl-anime-character_603843-485.jpg?size=626&ext=jpg&ga=GA1.2.647470437.1685963067&semt=robertav1_2_sidr',
-      'userName': 'Rohan Singh',
-      "profileImage":
-          "https://img.freepik.com/free-vector/little-blond-boy-anime_18591-77251.jpg?size=626&ext=jpg&ga=GA1.2.647470437.1685963067&semt=robertav1_2_sidr"
-    },
-    {
-      'imageUrl':
-          'https://img.freepik.com/free-photo/girl-with-backpack-sunset-generative-al_169016-28612.jpg?size=338&ext=jpg&ga=GA1.1.647470437.1685963067&semt=robertav1_2_sidr',
-      'userName': 'Rohan Singh',
-      "profileImage":
-          "https://img.freepik.com/premium-vector/character-design-girl-bring-stick_286658-173.jpg?size=626&ext=jpg&ga=GA1.1.647470437.1685963067&semt=robertav1_2_sidr"
-    },
-    {
-      'imageUrl':
-          'https://img.freepik.com/premium-vector/character-design-girl-bring-stick_286658-173.jpg?size=626&ext=jpg&ga=GA1.1.647470437.1685963067&semt=robertav1_2_sidr',
-      'userName': 'Rohan Singh',
-      "profileImage":
-          "https://img.freepik.com/free-vector/little-blond-boy-anime_18591-77251.jpg?size=626&ext=jpg&ga=GA1.2.647470437.1685963067&semt=robertav1_2_sidr"
-    },
-  ];
+  // var postData = [
+  //   {
+  //     'imageUrl':
+  //         'https://img.freepik.com/free-vector/realistic-samurai-illustrated-background_52683-69460.jpg?w=740&t=st=1686137185~exp=1686137785~hmac=390704896744102739b13593a6ee86ac579820b437588272dda37641c152fe9b',
+  //     'userName': 'Vikram Singh Rathore',
+  //     "profileImage":
+  //         "https://img.freepik.com/free-vector/little-blond-boy-anime_18591-77251.jpg?size=626&ext=jpg&ga=GA1.2.647470437.1685963067&semt=robertav1_2_sidr"
+  //   },
+  //   {
+  //     'imageUrl':
+  //         'https://img.freepik.com/free-vector/little-blond-boy-anime_18591-77251.jpg?size=626&ext=jpg&ga=GA1.2.647470437.1685963067&semt=robertav1_2_sidr',
+  //     'userName': 'Vivek Kumar',
+  //     "profileImage":
+  //         "https://img.freepik.com/premium-vector/character-design-girl-bring-stick_286658-173.jpg?size=626&ext=jpg&ga=GA1.1.647470437.1685963067&semt=robertav1_2_sidr"
+  //   },
+  //   {
+  //     'imageUrl':
+  //         'https://img.freepik.com/premium-vector/heart-girl-anime-character_603843-485.jpg?size=626&ext=jpg&ga=GA1.2.647470437.1685963067&semt=robertav1_2_sidr',
+  //     'userName': 'Rohan Singh',
+  //     "profileImage":
+  //         "https://img.freepik.com/free-vector/little-blond-boy-anime_18591-77251.jpg?size=626&ext=jpg&ga=GA1.2.647470437.1685963067&semt=robertav1_2_sidr"
+  //   },
+  //   {
+  //     'imageUrl':
+  //         'https://img.freepik.com/free-photo/girl-with-backpack-sunset-generative-al_169016-28612.jpg?size=338&ext=jpg&ga=GA1.1.647470437.1685963067&semt=robertav1_2_sidr',
+  //     'userName': 'Rohan Singh',
+  //     "profileImage":
+  //         "https://img.freepik.com/premium-vector/character-design-girl-bring-stick_286658-173.jpg?size=626&ext=jpg&ga=GA1.1.647470437.1685963067&semt=robertav1_2_sidr"
+  //   },
+  //   {
+  //     'imageUrl':
+  //         'https://img.freepik.com/premium-vector/character-design-girl-bring-stick_286658-173.jpg?size=626&ext=jpg&ga=GA1.1.647470437.1685963067&semt=robertav1_2_sidr',
+  //     'userName': 'Rohan Singh',
+  //     "profileImage":
+  //         "https://img.freepik.com/free-vector/little-blond-boy-anime_18591-77251.jpg?size=626&ext=jpg&ga=GA1.2.647470437.1685963067&semt=robertav1_2_sidr"
+  //   },
+  // ];
 
   var likeImagesList = [
     'https://img.freepik.com/free-photo/girl-with-backpack-sunset-generative-al_169016-28612.jpg?size=338&ext=jpg&ga=GA1.1.647470437.1685963067&semt=robertav1_2_sidr',
@@ -88,7 +114,6 @@ class HomeView extends StatelessWidget {
                 expandedHeight: 40,
                 floating: true,
                 pinned: false,
-                
                 snap: true,
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -105,7 +130,6 @@ class HomeView extends StatelessWidget {
                   ],
                 ),
               ),
-            
               SliverToBoxAdapter(
                 child: SizedBox(
                   height: 120,
@@ -135,7 +159,7 @@ class HomeView extends StatelessWidget {
                     itemCount: postData.length,
                     itemBuilder: (context, index) {
                       return PostCard(
-                        likeImagesList: likeImagesList,
+                        likeImagesList: [],
                         postData: postData[index],
                       );
                     }),
@@ -158,6 +182,16 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var images = postData['postImages'] as List;
+    var listImages = postData['likesImage'] as List;
+    print(listImages);
+
+    // var images = postData['postImages'] as List;
+    // var listImages = postData['likesImage'] as List<String>;
+    // for()
+    // {
+
+    // }
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -166,10 +200,10 @@ class PostCard extends StatelessWidget {
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Row(children: [
-              CircleAvatar(
-                radius: 35,
-                backgroundImage: NetworkImage(postData['profileImage']),
-              ),
+              // CircleAvatar(
+              //   radius: 35,
+              //   backgroundImage: NetworkImage(postData['profileImage']),
+              // ),
               SizedBox(
                 width: 10,
               ),
@@ -177,7 +211,7 @@ class PostCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    postData['userName'],
+                    "${postData['userName']}",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                   Text('15 mins ago', style: TextStyle(color: Colors.white38))
@@ -189,15 +223,18 @@ class PostCard extends StatelessWidget {
           SizedBox(
             height: 15,
           ),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.network(
-              postData['imageUrl'],
-              height: 280,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
-          ),
+          images.isEmpty
+              ? SizedBox()
+              : ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    "${postData['postImages'][0]}",
+                    height: 280,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+          Text("${postData['description']}"),
           SizedBox(
             height: 15,
           ),
@@ -206,13 +243,14 @@ class PostCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  LikesImages(
-                    likeImages: likeImagesList,
-                  ),
+                  if (listImages.isNotEmpty)
+                    LikesImages(
+                      likeImages: listImages,
+                    ),
                   SizedBox(
                     width: 15,
                   ),
-                  Text("15 Likes",
+                  Text("${postData['likesCount']} Likes",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   SizedBox(
@@ -232,7 +270,7 @@ class PostCard extends StatelessWidget {
             height: 10,
           ),
           Text(
-            "View All 48 comments",
+            "View All ${postData['commentsCount']} comments",
             style: TextStyle(color: Colors.grey),
           )
         ],
@@ -246,7 +284,7 @@ class LikesImages extends StatelessWidget {
     super.key,
     required this.likeImages,
   });
-  final List<String> likeImages;
+  final likeImages;
 
   @override
   Widget build(BuildContext context) {
@@ -314,8 +352,7 @@ class ProfileStoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return 
-    Stack(
+    return Stack(
       alignment: Alignment.center,
       children: [
         Padding(
@@ -353,6 +390,5 @@ class ProfileStoryCard extends StatelessWidget {
         )
       ],
     );
-  
   }
 }

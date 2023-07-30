@@ -60,4 +60,21 @@ class FirestoreService {
       throw error;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getPost() async {
+    List<Map<String, dynamic>> postData = [];
+    try {
+      await FirebaseFirestore.instance
+          .collection('posts')
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          postData.add(doc.data() as Map<String, dynamic>);
+        });
+      });
+      return postData;
+    } catch (e) {
+      return [];
+    }
+  }
 }
