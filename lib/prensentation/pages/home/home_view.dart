@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:social_chat_app/prensentation/pages/home/widgets/post_card.dart';
 
+import 'widgets/posts_view.dart';
 import 'widgets/profile_story_card.dart';
 import 'widgets/story_card.dart';
 // ignore_for_file: prefer_const_constructors
@@ -131,19 +132,11 @@ class HomeView extends StatelessWidget {
                 ),
               ),
               SliverToBoxAdapter(
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: postData.length,
-                    itemBuilder: (context, index) {
-                      return PostCard(
-                        likeImagesList: likeImagesList,
-                        postData: postData[index],
-                      );
-                    }),
+                child: PostsView(postData: postData, likeImagesList: likeImagesList),
               ),
             ],
           ),
         ));
   }
 }
+

@@ -9,6 +9,21 @@ class FirestoreService {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   CollectionReference post = FirebaseFirestore.instance.collection('posts');
 
+  Future<List<Map<String, dynamic>>> getPost() async {
+    // data types
+    List<Map<String, dynamic>> postData = [];
+    try {
+      await post.get().then((QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          postData.add(doc.data() as Map<String, dynamic>);
+        });
+      });
+      return postData;
+    } catch (e) {
+      return [];
+    }
+  }
+
   Future<void> addUser(data) async {
     try {
       await users.doc(data['id']).set(data);
