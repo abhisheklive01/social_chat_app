@@ -8,6 +8,7 @@ class FirestoreService {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   CollectionReference post = FirebaseFirestore.instance.collection('posts');
+  CollectionReference likes = FirebaseFirestore.instance.collection('likes');
 
   Future<List<Map<String, dynamic>>> getPost() async {
     // data types
@@ -21,6 +22,21 @@ class FirestoreService {
       return postData;
     } catch (e) {
       return [];
+    }
+  }
+
+  isLike(value, postId, userId) async {
+    if (value) {
+      var data = {
+        "likeAt": DateTime.timestamp(),
+        "postId": postId,
+        "userId": userId,
+      };
+      await post.doc(postId).collection("likes").doc(userId).set(data);
+      await post.doc(postId).update({"likesCount": FieldValue.increment(1)});
+    } else {
+      await post.doc(postId).collection("likes").doc(userId).delete();
+      await post.doc(postId).update({"likesCount": FieldValue.increment(-1)});
     }
   }
 
