@@ -1,0 +1,324 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Kids Word Scratch',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.pink,
+        scaffoldBackgroundColor: Colors.white,
+        textTheme: GoogleFonts.fredokaTextTheme(),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.pink,
+          elevation: 0,
+          centerTitle: true,
+          titleTextStyle: GoogleFonts.fredoka(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      home: const WordScratchGame(),
+    );
+  }
+}
+
+class WordScratchGame extends StatefulWidget {
+  const WordScratchGame({super.key});
+
+  @override
+  _WordScratchGameState createState() => _WordScratchGameState();
+}
+
+class _WordScratchGameState extends State<WordScratchGame> {
+  // Grid of letters
+  final List<List<String>> grid = [
+    ['A', 'P', 'P', 'P', 'E'],
+    ['C', 'S', 'W', 'L', 'A'],
+    ['I', 'T', 'U', 'E', 'G'],
+    ['C', 'O', 'R', 'N', 'O'],
+    ['M', 'F', 'O', 'N', 'N'],
+  ];
+
+  // Words to find (with icons)
+  final Map<String, IconData> wordsWithIcons = {
+    'APPLE': Icons.apple,
+    'SUN': Icons.wb_sunny,
+    'MOON': Icons.nightlight_round,
+    'CAR': Icons.directions_car,
+  };
+
+  // Found words
+  final Set<String> foundWords = {};
+
+  // Touch path and current tracing
+  List<Offset?> points = [];
+  String currentWord = '';
+
+  // Bounds for each letter (used for collision detection)
+  final Map<String, Rect> letterBounds = {};
+
+  // Currently highlighted letters
+  final Set<String> selectedLetters = {};
+
+  // Build a word from the user's traced path
+  String _getWordFromPath(List<Offset?> offsets) {
+    if (offsets.isEmpty) return '';
+    String word = '';
+    Set<String> visitedKeys = {};
+
+    for (var point in offsets) {
+      if (point == null) continue;
+      letterBounds.forEach((key, rect) {
+        if (rect.contains(point) && !visitedKeys.contains(key)) {
+          visitedKeys.add(key);
+          selectedLetters.add(key);
+          word += key.split('_')[0]; // key is like "A_0_2"; letter = first part
+        }
+      });
+    }
+    return word;
+  }
+
+  // Check if traced word is in the word list
+  void _checkWord() {
+    if (wordsWithIcons.containsKey(currentWord)) {
+      setState(() {
+        foundWords.add(currentWord);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Kids Word Scratch'),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(
+                "https://raw.githubusercontent.com/abhisheklive01/social_chat_app/refs/heads/main/7ee10a7d-e45a-4620-b632-74d41cedb0b8.webp"), // Online image URL
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // List of target words
+            Container(
+              width: 300,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.3),
+                border: Border.all(color: Colors.blueAccent.shade100, width: 4),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Wrap(
+                  children: wordsWithIcons.keys.map((word) {
+                    final isFound = foundWords.contains(word);
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            wordsWithIcons[word],
+                            color: isFound ? Colors.green : Colors.black54,
+                            size: 30,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            word,
+                            style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.w600,
+                              color: isFound ? Colors.green : Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+
+            // Scratchable 300x300 grid
+            Center(
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  border: Border.all(color: Colors.blueAccent, width: 4),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: GestureDetector(
+                  onPanStart: (details) {
+                    setState(() {
+                      points = [details.localPosition];
+                      currentWord = '';
+                      selectedLetters.clear();
+                    });
+                  },
+                  onPanUpdate: (details) {
+                    setState(() {
+                      points.add(details.localPosition);
+                      currentWord = _getWordFromPath(points);
+                    });
+                  },
+                  onPanEnd: (details) => _checkWord(),
+                  child: CustomPaint(
+                    painter: ScratchPainter(
+                      grid: grid,
+                      points: points,
+                      foundWords: foundWords,
+                      selectedLetters: selectedLetters,
+                      onLetterBoundsUpdated: (bounds) {
+                        letterBounds.clear();
+                        letterBounds.addAll(bounds);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Show "Correct!" if the word is valid, otherwise show typed letters
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Colors.blueAccent.shade100, width: 4),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Text(
+                  wordsWithIcons.containsKey(currentWord)
+                      ? 'Correct!'
+                      : currentWord,
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: wordsWithIcons.containsKey(currentWord)
+                        ? Colors.green
+                        : Colors.black,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ScratchPainter extends CustomPainter {
+  final List<List<String>> grid;
+  final List<Offset?> points;
+  final Set<String> foundWords;
+  final Set<String> selectedLetters;
+  final Function(Map<String, Rect>) onLetterBoundsUpdated;
+
+  ScratchPainter({
+    required this.grid,
+    required this.points,
+    required this.foundWords,
+    required this.selectedLetters,
+    required this.onLetterBoundsUpdated,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cellWidth = size.width / grid[0].length;
+    final cellHeight = size.height / grid.length;
+    final Map<String, Rect> generatedBounds = {};
+
+    // Child-like font style
+    final textStyle = GoogleFonts.fredoka(
+      // Change "roboto" to any Google Font
+      fontSize: 30,
+      fontWeight: FontWeight.bold,
+      color: Colors.deepPurple,
+    );
+    final textPainter = TextPainter(textDirection: TextDirection.ltr);
+
+    // Draw letters
+    for (int i = 0; i < grid.length; i++) {
+      for (int j = 0; j < grid[i].length; j++) {
+        final letter = grid[i][j];
+        final key = '${letter}_$i\_$j';
+
+        textPainter.text = TextSpan(text: letter, style: textStyle);
+        textPainter.layout();
+
+        final x = j * cellWidth + (cellWidth - textPainter.width) / 2;
+        final y = i * cellHeight + (cellHeight - textPainter.height) / 2;
+
+        // Make bounding box slightly bigger for easier collision detection
+        final padding = 8.0;
+        final rect = Rect.fromLTWH(
+          x - padding,
+          y - padding,
+          textPainter.width + padding * 2,
+          textPainter.height + padding * 2,
+        );
+        generatedBounds[key] = rect;
+
+        // If letter is selected, color it (pink or green if the entire word is found)
+        if (selectedLetters.contains(key)) {
+          final paintBg = Paint()
+            ..color = foundWords.contains(letter)
+                ? Colors.green.withOpacity(0.4)
+                : Colors.pinkAccent.withOpacity(0.4)
+            ..style = PaintingStyle.fill;
+          canvas.drawRect(rect, paintBg);
+        }
+
+        textPainter.paint(canvas, Offset(x, y));
+      }
+    }
+
+    // Send bounds back for collision detection
+    onLetterBoundsUpdated(generatedBounds);
+
+    // Draw the “scratch” line along user’s path
+    if (points.isNotEmpty) {
+      final paint = Paint()
+        ..color = Colors.pink.withOpacity(0.5)
+        ..strokeWidth = 15
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round
+        ..style = PaintingStyle.stroke;
+
+      final path = Path()..moveTo(points.first!.dx, points.first!.dy);
+
+      for (int i = 1; i < points.length; i++) {
+        if (points[i] != null) {
+          path.lineTo(points[i]!.dx, points[i]!.dy);
+        }
+      }
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
