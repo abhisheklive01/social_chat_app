@@ -1,0 +1,430 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'dart:async';
+import 'dart:math';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Kids Word Scratch',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.pink,
+        scaffoldBackgroundColor: Colors.white,
+        textTheme: GoogleFonts.fredokaTextTheme(),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.pink,
+          elevation: 0,
+          centerTitle: true,
+          titleTextStyle: GoogleFonts.fredoka(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      home: CatchingGame(),
+    );
+  }
+}
+
+class CatchingGame extends StatefulWidget {
+  @override
+  _CatchingGameState createState() => _CatchingGameState();
+}
+
+class _CatchingGameState extends State<CatchingGame>
+    with TickerProviderStateMixin {
+  // Game state
+  double basketX = 0.0;
+  int score = 0;
+  int missedItems = 0;
+  int level = 1;
+  bool gameOver = false;
+  List<FallingItem> fallingItems = [];
+
+  // Animation controllers
+  late AnimationController _basketController;
+  late AnimationController _scoreController;
+  late Animation<double> _basketScaleAnimation;
+
+  // Game constants
+  final double basketWidth = 100.0;
+  final double basketHeight = 60.0;
+  final double itemSize = 40.0;
+  final int maxMissedItems = 5;
+
+  // Level-specific variables
+  double fallingSpeed = 3.0;
+  double spawnRate = 2.0;
+  List<String> availableItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _setupAnimations();
+    _initializeLevel();
+    startGame();
+  }
+
+  void _setupAnimations() {
+    _basketController = AnimationController(
+      duration: Duration(milliseconds: 200),
+      vsync: this,
+    );
+
+    _scoreController = AnimationController(
+      duration: Duration(milliseconds: 500),
+      vsync: this,
+    );
+
+    _basketScaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.2,
+    ).animate(CurvedAnimation(
+      parent: _basketController,
+      curve: Curves.elasticOut,
+    ));
+  }
+
+  void _initializeLevel() {
+    switch (level) {
+      case 1:
+        fallingSpeed = 3.0;
+        spawnRate = 2.0;
+        availableItems = ['butterfly', 'beetle'];
+        break;
+      case 2:
+        fallingSpeed = 4.0;
+        spawnRate = 1.5;
+        availableItems = ['butterfly', 'beetle', 'dragonfly'];
+        break;
+      case 3:
+        fallingSpeed = 5.0;
+        spawnRate = 1.0;
+        availableItems = ['butterfly', 'beetle', 'dragonfly', 'ladybug'];
+        break;
+      default:
+        fallingSpeed = 5.0 + (level - 3) * 0.5;
+        spawnRate = max(0.5, 1.0 - (level - 3) * 0.1);
+        availableItems = [
+          'butterfly',
+          'beetle',
+          'dragonfly',
+          'ladybug',
+          'moth'
+        ];
+    }
+  }
+
+  void startGame() {
+    gameOver = false;
+    score = 0;
+    missedItems = 0;
+    level = 1;
+    fallingItems.clear();
+    _initializeLevel();
+
+    // Spawn items timer
+    Timer.periodic(Duration(milliseconds: (spawnRate * 1000).round()), (timer) {
+      if (gameOver) {
+        timer.cancel();
+        return;
+      }
+      spawnItem();
+    });
+
+    // Update game timer
+    Timer.periodic(Duration(milliseconds: 16), (timer) {
+      if (gameOver) {
+        timer.cancel();
+        return;
+      }
+      updateGame();
+    });
+  }
+
+  void spawnItem() {
+    if (gameOver) return;
+
+    final random = Random();
+
+    // Add debug items with increasing frequency in higher levels
+    final itemPool = [...availableItems];
+    if (random.nextDouble() < 0.1 + (level * 0.02)) {
+      itemPool.add('debug');
+    }
+
+    final itemType = itemPool[random.nextInt(itemPool.length)];
+
+    setState(() {
+      fallingItems.add(FallingItem(
+        x: random.nextDouble() * (MediaQuery.of(context).size.width - itemSize),
+        y: -itemSize,
+        type: itemType,
+        rotation: random.nextDouble() * 2 * pi,
+        rotationSpeed: (random.nextDouble() - 0.5) * 0.1,
+      ));
+    });
+  }
+
+  void updateGame() {
+    if (gameOver) return;
+
+    setState(() {
+      List<FallingItem> itemsToRemove = [];
+
+      for (var item in fallingItems) {
+        item.y += fallingSpeed;
+        item.rotation += item.rotationSpeed;
+
+        // Check collision with basket
+        if (item.y + itemSize >
+                MediaQuery.of(context).size.height - basketHeight &&
+            item.x + itemSize > basketX &&
+            item.x < basketX + basketWidth) {
+          if (item.type == 'debug') {
+            gameOver = true;
+          } else {
+            score += 10;
+            _basketController.forward(from: 0.0);
+            _scoreController.forward(from: 0.0);
+            itemsToRemove.add(item);
+
+            // Check for level up
+            if (score >= level * 200) {
+              level++;
+              _initializeLevel();
+            }
+          }
+        }
+        // Check if item is missed
+        else if (item.y > MediaQuery.of(context).size.height) {
+          if (item.type != 'debug') {
+            missedItems++;
+            if (missedItems >= maxMissedItems) {
+              gameOver = true;
+            }
+          }
+          itemsToRemove.add(item);
+        }
+      }
+
+      fallingItems.removeWhere((item) => itemsToRemove.contains(item));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: GestureDetector(
+        onHorizontalDragUpdate: (details) {
+          if (gameOver) return;
+
+          setState(() {
+            basketX += details.delta.dx;
+            basketX = basketX.clamp(
+              0.0,
+              MediaQuery.of(context).size.width - basketWidth,
+            );
+          });
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.lightBlue[200]!, Colors.lightBlue[100]!],
+            ),
+          ),
+          child: Stack(
+            children: [
+              // Game info
+              Positioned(
+                top: 40,
+                left: 20,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Level: $level',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      'Score: $score',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      'Missed: $missedItems/$maxMissedItems',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Falling items with rotation
+              ...fallingItems.map((item) => Positioned(
+                    left: item.x,
+                    top: item.y,
+                    child: Transform.rotate(
+                      angle: item.rotation,
+                      child: SizedBox(
+                        width: itemSize,
+                        height: itemSize,
+                        child: _buildItemWidget(item.type),
+                      ),
+                    ),
+                  )),
+
+              // Animated basket
+              Positioned(
+                left: basketX,
+                bottom: 20,
+                child: ScaleTransition(
+                  scale: _basketScaleAnimation,
+                  child: Container(
+                    width: basketWidth,
+                    height: basketHeight,
+                    decoration: BoxDecoration(
+                      color: Colors.brown[300],
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.brown[600]!, width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          offset: Offset(0, 4),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Game over overlay
+              if (gameOver)
+                Container(
+                  color: Colors.black54,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Game Over!',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 48,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Text(
+                          'Final Score: $score\nLevel Reached: $level',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: startGame,
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 16),
+                          ),
+                          child: Text(
+                            'Play Again',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItemWidget(String type) {
+    IconData icon;
+    Color color;
+
+    switch (type) {
+      case 'butterfly':
+        icon = Icons.flutter_dash;
+        color = Colors.purple;
+        break;
+      case 'beetle':
+        icon = Icons.bug_report;
+        color = Colors.blue;
+        break;
+      case 'dragonfly':
+        icon = Icons.pest_control;
+        color = Colors.teal;
+        break;
+      case 'ladybug':
+        icon = Icons.flutter_dash;
+        color = Colors.red;
+        break;
+      case 'moth':
+        icon = Icons.coronavirus;
+        color = Colors.orange;
+        break;
+      case 'debug':
+        icon = Icons.warning;
+        color = Colors.red;
+        break;
+      default:
+        icon = Icons.help;
+        color = Colors.grey;
+    }
+
+    return Icon(
+      icon,
+      size: itemSize,
+      color: color,
+      shadows: [
+        Shadow(
+          color: Colors.black26,
+          offset: Offset(2, 2),
+          blurRadius: 2,
+        ),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    _basketController.dispose();
+    _scoreController.dispose();
+    super.dispose();
+  }
+}
+
+class FallingItem {
+  double x;
+  double y;
+  final String type;
+  double rotation;
+  double rotationSpeed;
+
+  FallingItem({
+    required this.x,
+    required this.y,
+    required this.type,
+    required this.rotation,
+    required this.rotationSpeed,
+  });
+}
